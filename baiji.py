@@ -123,7 +123,7 @@ class AliCloudConnect:
         User will need to give this token when calling aliyun api.
         Example of use
             ali_connect = AliCloudConnect()
-            ali_connect.assume_role("acs:ram::5540531225646982:role/ecsadmin", "test")
+            ali_connect.assume_role("acs:ram::<<account_ID>>:role/ecsadmin", "test")
             sts = ali_connect.get_ststoken()
             ali_connect.stop_instances ....
 
@@ -162,7 +162,7 @@ class AliCloudConnect:
         Describe instance
         Example of call :
             ali_connect = AliCloudConnect()
-            ali_connect.describe_instances('i-gw85l8j45xztj442u9yy')
+            ali_connect.describe_instances()
         :return:
         """
         print 'Going to describe all instances'
@@ -185,9 +185,9 @@ class AliCloudConnect:
             ali_connect = AliCloudConnect()
             ali_connect.stop_instances('azertyuiop')
         otherwise, user can assume a role to have this privilege
-            ali_connect.assume_role("acs:ram::5540531225646980:role/ecsadmin", "test")
+            ali_connect.assume_role("acs:ram:<<account_ID>>:role/ecsadmin", "test")
             sts = ali_connect.get_ststoken()
-            ali_connect.stop_instances('i-gw85l8j45xztj442u9yy', sts_token=sts)
+            ali_connect.stop_instances('i-gw85l8j45xz42u9yy', sts_token=sts)
 
         :param instanceid:
         :param sts_token:
@@ -219,9 +219,9 @@ class AliCloudConnect:
             ali_connect = AliCloudConnect()
             ali_connect.start_instances('azertyuiop')
         otherwise, user can assume a role to have this privilege
-            ali_connect.assume_role("acs:ram::5540531225646982:role/ecsadmin", "test")
+            ali_connect.assume_role("acs:ram::<<account_ID>>:role/ecsadmin", "test")
             sts = ali_connect.get_ststoken()
-            ali_connect.start_instances('i-gw85l8j45xztj442u9yy', sts_token=sts)
+            ali_connect.start_instances('i-gw85l8j45xztju9yy', sts_token=sts)
 
         :param instanceid:
         :param sts_token:
