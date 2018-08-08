@@ -31,9 +31,11 @@ class AliCloudConnect:
     sts_domain = "sts.aliyuncs.com"
     ram_domain = "ram.aliyuncs.com"
 
+    default_region='eu-central-1'
+
     protocol = "https"
 
-    def __init__(self, account_id=None , role=None):
+    def __init__(self, account_id=None , role=None, region_id=default_region):
         """
         Constructor of alicloudConnect
         We will try to connect with env first, config credentials and finally with instance role
@@ -45,7 +47,7 @@ class AliCloudConnect:
 
         access_key_id = ''
         access_key_secret = ''
-        region_id = ''
+
 
         connect_with_credential = False
         connect_with_role = False
@@ -56,12 +58,10 @@ class AliCloudConnect:
             access_key_id = environ['ALICLOUD_ACCESS_KEY']
             if 'ALICLOUD_SECRET_KEY' in environ:
                 access_key_secret = environ['ALICLOUD_SECRET_KEY']
-                if 'ALICLOUD_REGION' in environ:
-                    region_id = environ['ALICLOUD_REGION']
-                    connect_with_credential = True
-                    self.AccessKeyId = access_key_id
-                    self.AccessKeySecretId = access_key_secret
-                    self.RegionId = region_id
+                connect_with_credential = True
+                self.AccessKeyId = access_key_id
+                self.AccessKeySecretId = access_key_secret
+                self.RegionId = region_id
 
             else:
                 print 'Both access key and secret key are mandatory '
@@ -178,6 +178,30 @@ class AliCloudConnect:
         except Exception as e:
             print e
 
+
+    def describe_disks(self):
+        """
+        Describe instance
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.describe_instances()
+        :return:
+        """
+        print 'Going to describe all disks'
+
+        request = CommonRequest()
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('DescribeDisks')
+
+        try:
+            response = self.client.do_action_with_exception(request)
+            self.pretty_print(response)
+        except Exception as e:
+            print e
+
+
+
     def stop_instances(self, instanceid, sts_token = None):
         """
         Stop Alicloud instance
@@ -245,3 +269,158 @@ class AliCloudConnect:
                 self.pretty_print(response)
             except Exception as e:
                 print e
+
+###############################
+############VPC################
+###############################
+
+    def describe_vpcs(self):
+        """
+        Describe vpcs
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.describe_vpcs()
+        :return:
+        """
+        print 'Going to describe all vpcs'
+
+        request = CommonRequest()
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('DescribeVpcs')
+
+        try:
+            response = self.client.do_action_with_exception(request)
+            self.pretty_print(response)
+        except Exception as e:
+            print e
+
+
+
+    def describe_vswitchs(self):
+        """
+        Describe vswitches
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.describe_vswitches()
+        :return:
+        """
+        print 'Going to describe all vswitches'
+
+        request = CommonRequest()
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('DescribeVSwitches')
+
+        try:
+            response = self.client.do_action_with_exception(request)
+            self.pretty_print(response)
+        except Exception as e:
+            print e
+
+###############################
+############RAM################
+###############################
+
+
+    def create_role(self, role_name, policy_document):
+        """
+
+        :param self:
+        :param role_name:
+        :param policy_document:
+        :return:
+        """
+        print 'Going to create role: ' + role_name
+        request = CommonRequest()
+        request.set_domain(self.ram_domain)
+        request.set_version(self.version_2015_05_01)
+        request.set_protocol_type(self.protocol)
+        request.add_query_param("RoleName", role_name)
+        request.add_query_param("AssumeRolePolicyDocument", policy_document)
+        request.set_action_name('CreateRole')
+        try:
+            response = self.client.do_action_with_exception(request)
+            print response
+        except Exception as e:
+            print e
+
+
+
+    def get_role(self, role_name):
+        """
+
+        :param alicloud_client:
+        :param role_name:
+        :return:
+        """
+        print 'Going to get role ' + role_name
+        request = CommonRequest()
+        request.set_domain(self.ram_domain)
+        request.set_version(self.version_2015_05_01)
+        request.set_protocol_type(self.protocol)
+        request.add_query_param("RoleName", role_name)
+        request.set_action_name('GetRole')
+        try:
+            response = self.client.do_action_with_exception(request)
+            self.pretty_print(response)
+        except Exception as e:
+            print e
+
+
+    def list_users(self):
+        """
+
+        :param alicloud_client:
+        :return:
+        """
+        print 'Going to list users'
+        request = CommonRequest()
+        request.set_domain(self.ram_domain)
+        request.set_version(self.version_2015_05_01)
+        request.set_protocol_type(self.protocol)
+        request.set_action_name('ListUsers')
+        try:
+            response = self.client.do_action_with_exception(request)
+            self.pretty_print(response)
+        except Exception as e:
+            print e
+
+
+    def list_groups(self):
+        """
+
+        :param alicloud_client:
+        :return:
+        """
+        print 'Going to list groups'
+        request = CommonRequest()
+        request.set_domain(self.ram_domain)
+        request.set_version(self.version_2015_05_01)
+        request.set_protocol_type(self.protocol)
+        request.set_action_name('ListGroups')
+        try:
+            response = self.client.do_action_with_exception(request)
+            self.pretty_print(response)
+        except Exception as e:
+            print e
+
+    def list_groups(self):
+        """
+
+        :param alicloud_client:
+        :return:
+        """
+        print 'Going to list Policies'
+        request = CommonRequest()
+        request.set_domain(self.ram_domain)
+        request.set_version(self.version_2015_05_01)
+        request.set_protocol_type(self.protocol)
+        request.set_action_name('ListPolicies')
+        try:
+            response = self.client.do_action_with_exception(request)
+            self.pretty_print(response)
+        except Exception as e:
+            print e
+
+
