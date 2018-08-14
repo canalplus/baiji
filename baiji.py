@@ -11,10 +11,16 @@ from os import path
 import requests
 import json
 import logging
+import traceback
+import sys
 
+logging.getLogger().setLevel(logging.DEBUG)
 
 class AliCloudConnect:
     """
+    AliCloudConnect
+
+    Provides root functions and objects to use AliCloud features.
     """
 
     def __init__(self, account_id=None , role=None, region_id="eu-central-1"):
@@ -331,6 +337,8 @@ class AliCloudConnect:
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
     ###############################
     ############RAM################
