@@ -1,5 +1,7 @@
 #!/usr/bin/python
 
+from aliyunsdkcore import request as aliyun_request
+from aliyunsdkcore.http import protocol_type
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
 from aliyunsdkecs.request.v20140526 import StartInstanceRequest
@@ -38,9 +40,10 @@ class AliCloudConnect:
         # if stsToken = None / or pass stsToken if it is not none.
         self.client = None
         self.access_key_id = None
-        self.access_secret_key = None
+        self.access_key_secret = None
         self.region_id = region_id
         self.sts_token = None
+        aliyun_request.set_default_protocol_type(protocol_type.HTTPS)
 
         # each api has it's own version !
         self.version_2014_05_26 = "2014-05-26"
@@ -52,7 +55,6 @@ class AliCloudConnect:
         self.sts_domain = "sts.aliyuncs.com"
         self.ram_domain = "ram.aliyuncs.com"
 
-        self.protocol = "https"
 
         access_key_id = ''
         access_key_secret = ''
@@ -68,7 +70,7 @@ class AliCloudConnect:
                 access_key_secret = environ['ALICLOUD_SECRET_KEY']
                 connect_with_credential = True
                 self.access_key_id = access_key_id
-                self.access_secret_key = access_key_secret
+                self.access_key_secret = access_key_secret
 
             else:
                 logging.info('Both access ALICLOUD_ACCESS_KEY and secret ALICLOUD_SECRET_KEY are mandatory.')
@@ -81,7 +83,7 @@ class AliCloudConnect:
             region_id = config['profiles'][1]['region_id']
             connect_with_credential = True
             self.access_key_id = access_key_id
-            self.access_secret_key = access_key_secret
+            self.access_key_secret = access_key_secret
 
         elif account_id is not None and role is not None:
             logging.info('Trying to connect with instance role.')
@@ -92,7 +94,7 @@ class AliCloudConnect:
             sts_token_session = response['SecurityToken']
 
             self.access_key_id = sts_access_key
-            self.access_secret_key = sts_secret_key
+            self.access_key_secret = sts_secret_key
             connect_with_role = True
 
         else:
@@ -107,7 +109,7 @@ class AliCloudConnect:
                                                           sts_secret_key,
                                                           sts_token_session)
                 self.sts_token = sts_token_credential
-                self.client = AcsClient(region_id='cn-hangzhou', credential=sts_token_credential)
+                self.client = AcsClient(region_id='eu-central-1', credential=sts_token_credential)
 
         except Exception as e:
             logging.error(e)
@@ -119,7 +121,7 @@ class AliCloudConnect:
         return self.access_key_id
 
     def get_secretkey(self):
-        return self.access_secret_key
+        return self.access_key_secret
 
     def get_ststoken(self):
         return self.sts_token
@@ -146,7 +148,6 @@ class AliCloudConnect:
         request = CommonRequest()
         request.set_domain(self.sts_domain)
         request.set_version(self.version_2015_04_01)
-        request.set_protocol_type(self.protocol)
         request.add_query_param("RoleArn", role_arn)
         request.add_query_param("RoleSessionName", session_name)
         request.set_action_name('AssumeRole')
@@ -177,7 +178,7 @@ class AliCloudConnect:
 
         :return:
         """
-        print 'Going to describe all instances'
+        logging.info('Going to describe all instances.')
 
         request = CommonRequest()
         request.set_domain(self.ecs_domain)
@@ -188,7 +189,7 @@ class AliCloudConnect:
             response = self.client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
-            print e
+            logging.error(e)
 
 
     def describe_disks(self):
@@ -201,7 +202,7 @@ class AliCloudConnect:
 
         :return:
         """
-        print 'Going to describe all disks'
+        logging.info('Going to describe all disks.')
 
         request = CommonRequest()
         request.set_domain(self.ecs_domain)
@@ -212,7 +213,7 @@ class AliCloudConnect:
             response = self.client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
-            print e
+            logging.error(e)
 
 
 
@@ -313,8 +314,6 @@ class AliCloudConnect:
         except Exception as e:
             logging.error(e)
 
-
-
     def describe_vswitchs(self):
         """
         Describe vswitches.
@@ -360,7 +359,6 @@ class AliCloudConnect:
         request = CommonRequest()
         request.set_domain(self.ram_domain)
         request.set_version(self.version_2015_05_01)
-        request.set_protocol_type(self.protocol)
         request.add_query_param("RoleName", role_name)
         request.add_query_param("AssumeRolePolicyDocument", policy_document)
         request.set_action_name('CreateRole')
@@ -386,7 +384,6 @@ class AliCloudConnect:
         request = CommonRequest()
         request.set_domain(self.ram_domain)
         request.set_version(self.version_2015_05_01)
-        request.set_protocol_type(self.protocol)
         request.add_query_param("RoleName", role_name)
         request.set_action_name('GetRole')
         try:
@@ -409,7 +406,6 @@ class AliCloudConnect:
         request = CommonRequest()
         request.set_domain(self.ram_domain)
         request.set_version(self.version_2015_05_01)
-        request.set_protocol_type(self.protocol)
         request.set_action_name('ListUsers')
         try:
             response = self.client.do_action_with_exception(request)
@@ -431,7 +427,6 @@ class AliCloudConnect:
         request = CommonRequest()
         request.set_domain(self.ram_domain)
         request.set_version(self.version_2015_05_01)
-        request.set_protocol_type(self.protocol)
         request.set_action_name('ListGroups')
         try:
             response = self.client.do_action_with_exception(request)
