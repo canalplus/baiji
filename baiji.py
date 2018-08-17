@@ -38,7 +38,7 @@ class AliCloudConnect:
 
         # caller will need to pass accessKey, secretKey
         # if stsToken = None / or pass stsToken if it is not none.
-        self.client = None
+        self.__client = None
         self.access_key_id = None
         self.access_key_secret = None
         self.region_id = region_id
@@ -102,15 +102,26 @@ class AliCloudConnect:
 
         try:
             if connect_with_credential:
-                self.client = AcsClient(access_key_id, access_key_secret, region_id)
+                self.__client = AcsClient(access_key_id, access_key_secret, region_id)
 
             elif connect_with_role:
                 sts_token_credential = StsTokenCredential(sts_access_key,
                                                           sts_secret_key,
                                                           sts_token_session)
                 self.sts_token = sts_token_credential
-                self.client = AcsClient(region_id=self.region_id, credential=sts_token_credential)
+                self.__client = AcsClient(region_id=self.region_id, credential=sts_token_credential)
 
+        except Exception as e:
+            logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
+
+    def client(self, client_name):
+        try:
+            client = __import__("clients.ecs")
+            mod = getattr(client, client_name)
+            clt_class = getattr(mod, "Client")
+            return clt_class()
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
@@ -154,7 +165,7 @@ class AliCloudConnect:
         request.add_query_param("RoleSessionName", session_name)
         request.set_action_name('AssumeRole')
         try:
-            response = json.loads(self.client.do_action_with_exception(request))
+            response = json.loads(self.__client.do_action_with_exception(request))
             sts_access_key = response['Credentials']['AccessKeyId']
             sts_secret_key = response['Credentials']['AccessKeySecret']
             sts_token_session = response['Credentials']['SecurityToken']
@@ -190,7 +201,7 @@ class AliCloudConnect:
         request.set_action_name('DescribeInstanceStatus')
 
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
@@ -216,7 +227,7 @@ class AliCloudConnect:
         request.set_action_name('DescribeDisks')
 
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
@@ -257,7 +268,7 @@ class AliCloudConnect:
             logging.debug(sys.exc_info()[0])
         else:
             try:
-                response = self.client.do_action_with_exception(request)
+                response = self.__client.do_action_with_exception(request)
                 self.pretty_print(response)
             except Exception as e:
                 logging.error(e)
@@ -296,12 +307,13 @@ class AliCloudConnect:
                 logging.debug(sys.exc_info()[0])
         else:
             try:
-                response = self.client.do_action_with_exception(request)
+                response = self.__client.do_action_with_exception(request)
                 self.pretty_print(response)
             except Exception as e:
                 logging.error(e)
                 logging.debug(traceback.format_exc())
                 logging.debug(sys.exc_info()[0])
+
 
     ###############################
     ############VPC################
@@ -325,7 +337,7 @@ class AliCloudConnect:
         request.set_action_name('DescribeVpcs')
 
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
@@ -350,7 +362,7 @@ class AliCloudConnect:
         request.set_action_name('DescribeVSwitches')
 
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
@@ -382,7 +394,7 @@ class AliCloudConnect:
         request.add_query_param("AssumeRolePolicyDocument", policy_document)
         request.set_action_name('CreateRole')
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             loggging.info(response)
         except Exception as e:
             logging.error(e)
@@ -408,7 +420,7 @@ class AliCloudConnect:
         request.add_query_param("RoleName", role_name)
         request.set_action_name('GetRole')
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
@@ -431,7 +443,7 @@ class AliCloudConnect:
         request.set_version(self.version_2015_05_01)
         request.set_action_name('ListUsers')
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
@@ -454,7 +466,7 @@ class AliCloudConnect:
         request.set_version(self.version_2015_05_01)
         request.set_action_name('ListGroups')
         try:
-            response = self.client.do_action_with_exception(request)
+            response = self.__client.do_action_with_exception(request)
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
