@@ -51,7 +51,7 @@ class AliCloudConnect:
         self.version_2015_04_01 = "2015-04-01"
 
         # endpoint definiton by service
-        self.ecs_domain = "ecs.eu-central-1.aliyuncs.com"
+        self.ecs_domain = "ecs.{}.aliyuncs.com".format(self.region_id)
         self.sts_domain = "sts.aliyuncs.com"
         self.ram_domain = "ram.aliyuncs.com"
 
@@ -109,10 +109,12 @@ class AliCloudConnect:
                                                           sts_secret_key,
                                                           sts_token_session)
                 self.sts_token = sts_token_credential
-                self.client = AcsClient(region_id='eu-central-1', credential=sts_token_credential)
+                self.client = AcsClient(region_id=self.region_id, credential=sts_token_credential)
 
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
     def pretty_print(self, toprint):
         print json.dumps(json.loads(toprint), indent=4, sort_keys=True)
@@ -163,6 +165,8 @@ class AliCloudConnect:
             return response
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
     ###############################
     ############ECS################
@@ -190,6 +194,8 @@ class AliCloudConnect:
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
 
     def describe_disks(self):
@@ -214,6 +220,8 @@ class AliCloudConnect:
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
 
 
@@ -245,12 +253,16 @@ class AliCloudConnect:
                 self.pretty_print(response)
             except Exception as e:
                 logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
         else:
             try:
                 response = self.client.do_action_with_exception(request)
                 self.pretty_print(response)
             except Exception as e:
                 logging.error(e)
+                logging.debug(traceback.format_exc())
+                logging.debug(sys.exc_info()[0])
 
     def start_instances(self, instanceid, sts_token=None):
         """
@@ -280,12 +292,16 @@ class AliCloudConnect:
                 self.pretty_print(response)
             except Exception as e:
                 logging.error(e)
+                logging.debug(traceback.format_exc())
+                logging.debug(sys.exc_info()[0])
         else:
             try:
                 response = self.client.do_action_with_exception(request)
                 self.pretty_print(response)
             except Exception as e:
                 logging.error(e)
+                logging.debug(traceback.format_exc())
+                logging.debug(sys.exc_info()[0])
 
     ###############################
     ############VPC################
@@ -313,6 +329,8 @@ class AliCloudConnect:
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
     def describe_vswitchs(self):
         """
@@ -338,6 +356,7 @@ class AliCloudConnect:
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
+
 
     ###############################
     ############RAM################
@@ -367,6 +386,8 @@ class AliCloudConnect:
             loggging.info(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
 
 
@@ -391,6 +412,8 @@ class AliCloudConnect:
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
 
     def list_users(self):
@@ -412,6 +435,8 @@ class AliCloudConnect:
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
 
 
     def list_groups(self):
@@ -433,3 +458,5 @@ class AliCloudConnect:
             self.pretty_print(response)
         except Exception as e:
             logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
