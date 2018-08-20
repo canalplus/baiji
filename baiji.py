@@ -16,7 +16,7 @@ import logging
 import traceback
 import sys
 
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 
 class AliCloudConnect:
     """
