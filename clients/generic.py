@@ -61,3 +61,6 @@ class Resource(object):
     def __init__(self, params=None):
         super(Resource, self).__init__()
         self.__params = params
+
+        for name, value in self.__params.items():
+            setattr(self, name, value)

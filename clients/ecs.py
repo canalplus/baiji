@@ -46,6 +46,3 @@ class Instance(Resource):
     def __init__(self, params):
         super(Instance, self).__init__(params)
         self.__resource_type = "instance"
-
-    def get_id(self):
-        return self.__params["InstanceId"]
