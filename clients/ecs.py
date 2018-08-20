@@ -42,6 +42,19 @@ class Instances(ResourceCollection):
         )
         return response
 
+    def get(self, filters):
+        response = self.request(
+            "DescribeInstances",
+            {
+                'key_path': [
+                    "Instances", "Instance"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
 class Instance(Resource):
 
     def __init__(self, params):
@@ -61,6 +74,19 @@ class SecurityGroups(ResourceCollection):
                 'key_path': [
                     "SecurityGroups", "SecurityGroup"
                 ]
+            },
+            self.__resource_class
+        )
+        return response
+
+    def get(self, filters):
+        response = self.request(
+            "DescribeSecurityGroups",
+            {
+                'key_path': [
+                    "SecurityGroups", "SecurityGroup"
+                ],
+                'api_params': filters,
             },
             self.__resource_class
         )
