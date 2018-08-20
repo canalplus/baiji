@@ -22,6 +22,7 @@ class Client(GenericClient):
             self.__base_domain
         )
         self.instances = Instances(client, self.__domain, self.__version)
+        self.security_groups = SecurityGroups(client, self.__domain, self.__version)
 
 class Instances(ResourceCollection):
 
@@ -45,4 +46,27 @@ class Instance(Resource):
 
     def __init__(self, params):
         super(Instance, self).__init__(params)
-        self.__resource_type = "instance"
+
+
+class SecurityGroups(ResourceCollection):
+
+    def __init__(self, client, domain, version):
+        self.__resource_class = SecurityGroup
+        super(SecurityGroups, self).__init__(client, domain, version)
+
+    def all(self):
+        response = self.request(
+            "DescribeSecurityGroups",
+            {
+                'key_path': [
+                    "SecurityGroups", "SecurityGroup"
+                ]
+            },
+            self.__resource_class
+        )
+        return response
+
+class SecurityGroup(Resource):
+
+    def __init__(self, params):
+        super(SecurityGroup, self).__init__(params)
