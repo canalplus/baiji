@@ -50,6 +50,7 @@ class ResourceCollection(object):
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
+            raise e
 
     def generate_resources(self, response, top_key, res_key, resource_class):
         data = response[top_key][res_key]
