@@ -121,7 +121,9 @@ class AliCloudConnect:
             client = __import__("clients.ecs")
             mod = getattr(client, client_name)
             clt_class = getattr(mod, "Client")
-            return clt_class()
+            return clt_class(
+                self.__client
+            )
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
