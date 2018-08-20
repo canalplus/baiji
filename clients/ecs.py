@@ -26,18 +26,26 @@ class Client(GenericClient):
 class Instances(ResourceCollection):
 
     def __init__(self, client, domain, version):
+        self.__resource_class = Instance
         super(Instances, self).__init__(client, domain, version)
-        self.__resource_type = "instance"
 
     def all(self):
-        self.create_request("DescribeInstanceStatus")
-        response = self.send_request()
+        response = self.request(
+            "DescribeInstances",
+            {
+                'key_path': [
+                    "Instances", "Instance"
+                ]
+            },
+            self.__resource_class
+        )
         return response
 
 class Instance(Resource):
 
-    def __init__(self, identifier, name):
-        super(Instance, self).__init__(identifier, name)
-        self.__id = identifier
-        self.__name = name
+    def __init__(self, params):
+        super(Instance, self).__init__(params)
         self.__resource_type = "instance"
+
+    def get_id(self):
+        return self.__params["InstanceId"]

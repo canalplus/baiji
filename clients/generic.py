@@ -2,6 +2,9 @@
 
 from aliyunsdkcore.request import CommonRequest
 import logging
+import json
+import traceback
+import sys
 
 class Client(object):
 
@@ -29,26 +32,32 @@ class ResourceCollection(object):
         self.__domain = domain
         self.__version = version
 
-    def create_request(self, action, params=None):
-        self.__request = CommonRequest()
-        self.__request.set_domain(self.__domain)
-        self.__request.set_version(self.__version)
-        self.__request.set_action_name(action)
-
-    def send_request(self):
+    def request(self, action, params, resource_class):
+        request = CommonRequest()
+        request.set_domain(self.__domain)
+        request.set_version(self.__version)
+        request.set_action_name(action)
         try:
-            response = self.__client.do_action_with_exception(self.__request)
+            response = self.__client.do_action_with_exception(request)
             logging.debug(response)
-            return response
+            return self.generate_resources(
+                json.loads(response), params['key_path'][0],
+                params['key_path'][1], resource_class
+            )
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
 
+    def generate_resources(self, response, top_key, res_key, resource_class):
+        data = response[top_key][res_key]
+        res_list = []
+        for res in data:
+            res_list.append(resource_class(params=res))
+        return res_list
 
 class Resource(object):
 
-    def __init__(self, identifier, name):
+    def __init__(self, params=None):
         super(Resource, self).__init__()
-        self.__id = identifier
-        self.__name = name
+        self.__params = params
