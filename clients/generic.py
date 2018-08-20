@@ -37,6 +37,8 @@ class ResourceCollection(object):
         request.set_domain(self.__domain)
         request.set_version(self.__version)
         request.set_action_name(action)
+        if 'api_params' in params and params['api_params']:
+            request.set_query_params(params['api_params'])
         try:
             response = self.__client.do_action_with_exception(request)
             logging.debug(response)
