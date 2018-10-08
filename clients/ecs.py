@@ -23,6 +23,8 @@ class Client(GenericClient):
         )
         self.instances = Instances(client, self.__domain, self.__version)
         self.security_groups = SecurityGroups(client, self.__domain, self.__version)
+        self.tags = Tags(client, self.__domain, self.__version)
+        self.images = Tags(client, self.__domain, self.__version)
 
 class Instances(ResourceCollection):
 
@@ -96,3 +98,144 @@ class SecurityGroup(Resource):
 
     def __init__(self, params):
         super(SecurityGroup, self).__init__(params)
+
+
+class Tags(ResourceCollection):
+
+    def __init__(self, client, domain, version):
+        self.__resource_class = Tag
+        super(Tags, self).__init__(client, domain, version)
+
+    def all(self):
+        response = self.request(
+            "DescribeTags",
+            {
+                'key_path': [
+                    "Tags", "Tag"
+                ]
+            },
+            self.__resource_class
+        )
+        return response
+
+    def get(self, filters):
+        response = self.request(
+            "DescribeTags",
+            {
+                'key_path': [
+                    "Tags", "Tag"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
+    def add_tags(self, filters):
+        response = self.request(
+            "AddTags",
+            {
+                'key_path': [
+                    "Tags", "Tag"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
+    def remove_tags(self, filters):
+        response = self.request(
+            "RemoveTags",
+            {
+                'key_path': [
+                    "Tags", "Tag"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
+class Tag(Resource):
+
+    def __init__(self, params):
+        super(Tag, self).__init__(params)
+
+
+class Images(ResourceCollection):
+
+    def __init__(self, client, domain, version):
+        self.__resource_class = Image
+        super(Images, self).__init__(client, domain, version)
+
+    def all(self):
+        response = self.request(
+            "DescribeImages",
+            {
+                'key_path': [
+                    "Images", "Image"
+                ]
+            },
+            self.__resource_class
+        )
+        return response
+
+    def get(self, filters):
+        response = self.request(
+            "DescribeImages",
+            {
+                'key_path': [
+                    "Images", "Image"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
+    def delete(self, filters):
+        response = self.request(
+            "DeleteImage",
+            {
+                'key_path': [
+                    "Images", "Image"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
+    def copy(self, filters):
+        response = self.request(
+            "CopyImage",
+            {
+                'key_path': [
+                    "Images", "Image"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
+    def modify_image_share_permission(self, filters):
+        response = self.request(
+            "ModifyImageSharePermission",
+            {
+                'key_path': [
+                    "Images", "Image"
+                ],
+                'api_params': filters,
+            },
+            self.__resource_class
+        )
+        return response
+
+class Image(Resource):
+
+    def __init__(self, params):
+        super(Image, self).__init__(params)
+
+
