@@ -7,7 +7,7 @@ class vpcClient(GenericClient):
 
     def __init__(self, client, region=None):
         default_version = "2014-05-26"
-        default_domain_prefix = 'ecs'
+        default_domain_prefix = 'vpc'
         if region:
             super(Client, self).__init__(
                 client, domain_prefix=default_domain_prefix, version=default_version, region=region
