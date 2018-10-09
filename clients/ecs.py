@@ -3,7 +3,7 @@
 from generic import Client as GenericClient
 from generic import Resource, ResourceCollection
 
-class Client(GenericClient):
+class ecsClient(GenericClient):
 
     def __init__(self, client, region=None):
         default_version = "2014-05-26"
@@ -131,27 +131,21 @@ class Tags(ResourceCollection):
         )
         return response
 
-    def add_tags(self, filters):
+    def add(self, params):
         response = self.request(
             "AddTags",
             {
-                'key_path': [
-                    "Tags", "Tag"
-                ],
-                'api_params': filters,
+                'api_params': params,
             },
             self.__resource_class
         )
         return response
 
-    def remove_tags(self, filters):
+    def remove(self, params):
         response = self.request(
             "RemoveTags",
             {
-                'key_path': [
-                    "Tags", "Tag"
-                ],
-                'api_params': filters,
+                'api_params': params,
             },
             self.__resource_class
         )
@@ -194,40 +188,31 @@ class Images(ResourceCollection):
         )
         return response
 
-    def delete(self, filters):
+    def delete(self, params):
         response = self.request(
             "DeleteImage",
             {
-                'key_path': [
-                    "Images", "Image"
-                ],
-                'api_params': filters,
+                'api_params': params,
             },
             self.__resource_class
         )
         return response
 
-    def copy(self, filters):
+    def copy(self, params):
         response = self.request(
             "CopyImage",
             {
-                'key_path': [
-                    "Images", "Image"
-                ],
-                'api_params': filters,
+                'api_params': params,
             },
             self.__resource_class
         )
         return response
 
-    def modify_image_share_permission(self, filters):
+    def share_permission(self, params):
         response = self.request(
             "ModifyImageSharePermission",
             {
-                'key_path': [
-                    "Images", "Image"
-                ],
-                'api_params': filters,
+                'api_params': params,
             },
             self.__resource_class
         )
@@ -237,5 +222,4 @@ class Image(Resource):
 
     def __init__(self, params):
         super(Image, self).__init__(params)
-
 

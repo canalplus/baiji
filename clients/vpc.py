@@ -3,7 +3,7 @@
 from generic import Client as GenericClient
 from generic import Resource, ResourceCollection
 
-class Client(GenericClient):
+class vpcClient(GenericClient):
 
     def __init__(self, client, region=None):
         default_version = "2014-05-26"
