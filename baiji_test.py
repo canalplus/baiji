@@ -21,8 +21,8 @@ try:
     connect = AliCloudConnect(region_id='eu-central-1')
     clt = connect.client('ecs')
     if len(images) > 0:
-        result2 = clt.images.share_permission({"RegionId": "eu-central-1", "ImageId": images[0].ImageId, "AddAccount.1": ""})
-        result3 = clt.images.share_permission({"RegionId": "eu-central-1", "ImageId": result2["ImageId"], "RemoveAccount.1": ""})
+        # result2 = clt.images.share_permission({"RegionId": "eu-central-1", "ImageId": images[0].ImageId, "AddAccount.1": ""})
+        # result3 = clt.images.share_permission({"RegionId": "eu-central-1", "ImageId": result2["ImageId"], "RemoveAccount.1": ""})
         result4 = clt.tags.add({"RegionId": "eu-central-1", "ResourceType": "image", "ResourceId": images[0].ImageId, "Tag.1.key": "version", "Tag.1.value": "tuto"})
         result5 = clt.tags.remove({"RegionId": "eu-central-1", "ResourceType": "image", "ResourceId": images[0].ImageId, "Tag.1.key": "version", "Tag.1.value": "tuto"})
 
