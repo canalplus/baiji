@@ -6,7 +6,7 @@ import pdb
 try:
     connect = AliCloudConnect(region_id='eu-central-1')
     clt = connect.client('ecs')
-    sg = print(clt.security_groups.all())
+    sg = clt.security_groups.all()
     image = clt.images.all()
     tag = clt.tags.all()
     vpc = clt.vpcs.all()
