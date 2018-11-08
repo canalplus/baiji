@@ -42,10 +42,13 @@ class ResourceCollection(object):
         try:
             response = self.__client.do_action_with_exception(request)
             logging.debug(response)
-            return self.generate_resources(
-                json.loads(response), params['key_path'][0],
-                params['key_path'][1], resource_class
-            )
+            if 'key_path' in params and params['key_path']:
+                return self.generate_resources(
+                    json.loads(response), params['key_path'][0],
+                    params['key_path'][1], resource_class
+                )
+            else:
+                return json.loads(response)
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
