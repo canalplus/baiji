@@ -3,10 +3,19 @@
 from aliyunsdkcore import request as aliyun_request
 from aliyunsdkcore.http import protocol_type
 from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.acs_exception.exceptions import ClientException
+
 from aliyunsdkcore.request import CommonRequest
 from aliyunsdkecs.request.v20140526 import StartInstanceRequest
 from aliyunsdkecs.request.v20140526 import StopInstanceRequest
 from aliyunsdkcore.auth.credentials import StsTokenCredential
+from aliyunsdkecs.request.v20140526 import DescribeImagesRequest
+from aliyunsdkecs.request.v20140526 import DescribeTagsRequest
+from aliyunsdkecs.request.v20140526 import DescribeSecurityGroupsRequest
+from aliyunsdkecs.request.v20140526 import DescribeVSwitchesRequest
+from aliyunsdkecs.request.v20140526 import DeleteImageRequest
+from aliyunsdkecs.request.v20140526 import CopyImageRequest
+
 
 from os import environ
 from os import path
@@ -15,6 +24,7 @@ import json
 import logging
 import traceback
 import sys
+import os
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -25,13 +35,13 @@ class AliCloudConnect:
     Provides root functions and objects to use AliCloud features.
     """
 
-    def __init__(self, account_id=None , role=None, region_id="eu-central-1"):
+    def __init__(self, account_id=None, role=None, region_id="eu-central-1"):
         """
         Constructor of alicloudConnect.
-
+        
         We will try to connect with env first, config credentials and finally with instance role.
         User will use the AcsClient to deal with aliyun api.
-
+        
         :param account_id:
         :param role:
         """
@@ -63,6 +73,7 @@ class AliCloudConnect:
         connect_with_role = False
         config_file = path.expanduser('~') + "/.aliyun/config.json"
         logging.info('Connection to Alicloud.')
+        
         if 'ALICLOUD_ACCESS_KEY' in environ:
             logging.info('Trying to connect with credentials from environment.')
             access_key_id = environ['ALICLOUD_ACCESS_KEY']
@@ -237,7 +248,6 @@ class AliCloudConnect:
             logging.debug(sys.exc_info()[0])
 
 
-
     def stop_instances(self, instanceid, sts_token = None):
         """
         Stop Alicloud instances.
@@ -277,6 +287,7 @@ class AliCloudConnect:
                 logging.debug(traceback.format_exc())
                 logging.debug(sys.exc_info()[0])
 
+    
     def start_instances(self, instanceid, sts_token=None):
         """
         Start Alicloud instances.
@@ -315,7 +326,7 @@ class AliCloudConnect:
                 logging.error(e)
                 logging.debug(traceback.format_exc())
                 logging.debug(sys.exc_info()[0])
-
+    
 
     ###############################
     ############VPC################
@@ -346,131 +357,272 @@ class AliCloudConnect:
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
 
-    def describe_vswitchs(self):
+    
+    def describe_vswitches(self, vswitchid=None, vswitchname=None):
         """
         Describe vswitches.
+        response = [vswitch] ## response is a list
 
         Example of call :
             ali_connect = AliCloudConnect()
             ali_connect.describe_vswitches()
 
         :return:
+        
         """
         logging.info('Going to describe all vswitches.')
-
+        response = []
         request = CommonRequest()
         request.set_domain(self.ecs_domain)
         request.set_version(self.version_2014_05_26)
         request.set_action_name('DescribeVSwitches')
 
+        if vswitchid:
+            request.add_query_param("VSwitchId", vswitchid)
+
         try:
-            response = self.__client.do_action_with_exception(request)
-            self.pretty_print(response)
+            resp = self.__client.do_action_with_exception(request)
+            resp = json.loads(resp)
+            vswitchs = resp.get("VSwitches", {}).get("VSwitch")
+            if vswitchname:
+                for vswitch in vswitchs:
+                    if vswitch.get("VSwitchName") == vswitchname:
+                        response = [vswitch]
+                        break
+                if not response:
+                    logging.error("vswitch not found")
+            else:
+                response = vswitchs
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
+        return response
 
-
-    ###############################
-    ############RAM################
-    ###############################
-
-
-    def create_role(self, role_name, policy_document):
+    def describe_images(self, imageid=None, imagename=None, version=None):
         """
-        create_role
+        Describe images
 
-        Creates a RAM role.
+        tags in alicloud are in this form:
+        {Tag.n.key, Tag.n.value}
 
-        :param self:
-        :param role_name:
-        :param policy_document:
+        version: Tag.1.value
+        image_version: Tag.1.key
+
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.describe_images()
+
         :return:
         """
-        logging.info("Going to create role: {}".format(role_name))
+        response = []
         request = CommonRequest()
-        request.set_domain(self.ram_domain)
-        request.set_version(self.version_2015_05_01)
-        request.add_query_param("RoleName", role_name)
-        request.add_query_param("AssumeRolePolicyDocument", policy_document)
-        request.set_action_name('CreateRole')
+        request.set_accept_format('json')
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('DescribeImages')
+        if imageid:
+            request.add_query_param("imageId", imageid)
+        if imagename:
+            request.add_query_param("ImageName", imagename)
+
+        if version: 
+            request.add_query_param('Tag.1.value', version)
+            request.add_query_param('Tag.1.key', 'image_version')
         try:
-            response = self.__client.do_action_with_exception(request)
-            loggging.info(response)
+            resp = self.__client.do_action_with_exception(request)
+            response = json.loads(resp)
+            response = response.get("Images", {}).get("Image")
+            #self.pretty_print(response)
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
+        return response
 
-
-
-    def get_role(self, role_name):
+    def delete_images(self, imageid=None, imagename=None, version=None):
         """
-        get_role
+        Delete image
 
-        Gets data of a RAM role.
-
-        :param alicloud_client:
-        :param role_name:
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.delete_images()
         :return:
         """
-        logging.info("Going to get role {}".format(role_name))
+        print 'Going to delete images'
+        response = "succeeded"
         request = CommonRequest()
-        request.set_domain(self.ram_domain)
-        request.set_version(self.version_2015_05_01)
-        request.add_query_param("RoleName", role_name)
-        request.set_action_name('GetRole')
+        request.set_accept_format('json')
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('DeleteImage')
+
+        if imageid:
+            request.add_query_param("imageId", imageid)
+        if imagename:
+            request.add_query_param("ImageName", imagename)
+
+        if version: 
+            request.add_query_param('Tag.1.value', version)
+            request.add_query_param('Tag.1.key', 'image_version')
+
         try:
-            response = self.__client.do_action_with_exception(request)
-            self.pretty_print(response)
+            resp = self.__client.do_action_with_exception(request)
         except Exception as e:
+            response = e
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
+        return response
 
-
-    def list_users(self):
+    def add_tags(self, resource_type=None, resource_id=None, tags=None):
         """
-        list_users
+        Add tags
+        
+        Alicloud tags' are in this form:
+        {Tag.n.key, Tag.n.value} 
 
-        Lists RAM users.
-
-        :param alicloud_client:
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.add_tags()
         :return:
         """
-        logging.info('Going to list users.')
+        response = []
         request = CommonRequest()
-        request.set_domain(self.ram_domain)
-        request.set_version(self.version_2015_05_01)
-        request.set_action_name('ListUsers')
+        request.set_accept_format('json')
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_method('POST')
+        request.set_action_name('AddTags')
+        request.add_query_param("ResourceType", resource_type)
+        request.add_query_param("ResourceId", resource_id)
         try:
-            response = self.__client.do_action_with_exception(request)
-            self.pretty_print(response)
+            if isinstance(tags, list):
+                for tag in tags:
+                    n = 1
+                    for k, v in tag.items():
+                        request.add_query_param('Tag.{0}.key'.format(n), k)
+                        request.add_query_param('Tag.{0}.value'.format(n), v)
+                    n =+ 1
+
+            resp = self.__client.do_action_with_exception(request)
+            response = json.loads(resp)
+            #self.pretty_print(response)
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
+        return response
 
 
-    def list_groups(self):
+    def describe_security_groups(self, groupid=None, groupname=None):
         """
-        list_groups
-
-        Lists RAM groups.
-
-        :param alicloud_client:
+        Describe security_groups
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.describe_security_groups()
         :return:
         """
-        logging.info('Going to list groups.')
+        print 'Going to describe security groups'
+        response = []
         request = CommonRequest()
-        request.set_domain(self.ram_domain)
-        request.set_version(self.version_2015_05_01)
-        request.set_action_name('ListGroups')
+        request.set_accept_format('json')
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('DescribeSecurityGroups')
+        if groupid:
+            request.add_query_param("SecurityGroupId", groupid)
+        if groupname:
+            request.add_query_param("SecurityGroupName", groupname)
+
         try:
-            response = self.__client.do_action_with_exception(request)
-            self.pretty_print(response)
+            resp = self.__client.do_action_with_exception(request)
+            response = json.loads(resp)
+            response = response.get("SecurityGroups", {}).get("SecurityGroup")
+            #self.pretty_print(response)
         except Exception as e:
             logging.error(e)
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
+        return response
+
+    def copy_image(self, regionid=None, imageid=None, destinationimagename=None, destinationregionid=None):
+        """
+        Copy image
+
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.copy_image()
+        :return:
+        """
+        print 'Going to copy an image'
+        response = None
+        request = CommonRequest()
+        request.set_accept_format('json')
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('CopyImage')
+
+        if regionid:
+            request.add_query_param("RegionId", str(regionid))
+        if imageid:
+            request.add_query_param("ImageId", str(imageid))
+        if destinationimagename:
+            request.add_query_param("DestinationImageName", str(destinationimagename))
+        if destinationregionid:
+            request.add_query_param("DestinationRegionId", str(destinationregionid))
+
+        try:
+            resp = self.__client.do_action_with_exception(request)
+            response = json.loads(resp)
+            response = response.get("ImageId")
+         
+        except Exception as e:
+            logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
+        return response
+
+    def modify_image_share_permission(self, regionid=None, imageid=None, addaccounts=None, removeaccounts=None):
+
+        """
+        Share image
+        addaccounts: the destination account_id where the image will be shared
+        removeaccounts: the destination account_id where th image share will be canceled
+        
+        Example of call :
+            ali_connect = AliCloudConnect()
+            ali_connect.modify_image_share_permission()
+        :return:
+        """
+        response = None
+        request = CommonRequest()
+        request.set_accept_format('json')
+        request.set_domain(self.ecs_domain)
+        request.set_version(self.version_2014_05_26)
+        request.set_action_name('ModifyImageSharePermission')
+        if regionid:
+            request.add_query_param("RegionId", regionid)
+        if imageid:
+            request.add_query_param("ImageId", imageid)
+
+        try:
+            if isinstance(addaccounts, list):
+                for c in addaccounts:
+                    n = 1
+                    request.add_query_param('AddAccount.{0}'.format(n), c)
+                    n =+ 1
+            if isinstance(removeaccounts, list):
+                for cc in removeaccounts:
+                    n = 1
+                    request.add_query_param('RemoveAccount.{0}'.format(n), cc)
+                    n =+ 1
+
+            resp = self.__client.do_action_with_exception(request)
+            response = json.loads(resp)
+            #self.pretty_print(response)
+        except Exception as e:
+            logging.error(e)
+            logging.debug(traceback.format_exc())
+            logging.debug(sys.exc_info()[0])
+        return response
