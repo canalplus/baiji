@@ -6,6 +6,7 @@ import json
 import traceback
 import sys
 
+
 class Client(object):
 
     def __init__(self, client, base_domain='aliyuncs.com', domain_prefix=None, version=None, protocol=None, region='eu-central-1'):
@@ -31,6 +32,11 @@ class ResourceCollection(object):
 
     def request(self, action, params, resource_class):
         request = CommonRequest()
+
+        if action == "AssumeRole":
+            self.domain = self.domain.replace("ram.", "sts.")
+            self.version = "2015-04-01"
+
         request.set_domain(self.domain)
         request.set_version(self.version)
         request.set_action_name(action)
@@ -56,7 +62,14 @@ class ResourceCollection(object):
             raise e
 
     def generate_resources(self, response, top_key, res_key, resource_class):
-        data = response[top_key][res_key]
+        if res_key:
+            data = response[top_key][res_key]
+        else:
+            data = response[top_key]
+            if isinstance (data, list):
+                data = data
+            else:
+                data = [data]
         res_list = []
         for res in data:
             res_list.append(resource_class(params=res))
