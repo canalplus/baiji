@@ -42,7 +42,7 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='1.2.9',  # Required
+    version='1.3.0',  # Required
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -75,7 +75,7 @@ setup(
     #
     # This field corresponds to the "Home-Page" metadata field:
     # https://packaging.python.org/specifications/core-metadata/#home-page-optional
-    url='https://github.com/canalplus/baiji',  # Optional
+    url='https://github.com/canalplus/baiji/tree/add-modifications-of-RAM-stop-and-start-instance',  # Optional
 
     # This should be your name or the name of the organization which owns the
     # project.
