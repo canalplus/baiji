@@ -25,6 +25,8 @@ import traceback
 import sys
 import os
 
+from clients.ecs import Client as aliClient
+
 logging.getLogger().setLevel(logging.INFO)
 
 class AliCloudConnect:
@@ -37,10 +39,10 @@ class AliCloudConnect:
     def __init__(self, account_id=None, role=None, region_id="eu-central-1"):
         """
         Constructor of alicloudConnect.
-        
+
         We will try to connect with env first, config credentials and finally with instance role.
         User will use the AcsClient to deal with aliyun api.
-        
+
         :param account_id:
         :param role:
         """
@@ -72,7 +74,7 @@ class AliCloudConnect:
         connect_with_role = False
         config_file = path.expanduser('~') + "/.aliyun/config.json"
         logging.info('Connection to Alicloud.')
-        
+
         if 'ALICLOUD_ACCESS_KEY' in environ:
             logging.info('Trying to connect with credentials from environment.')
             access_key_id = environ['ALICLOUD_ACCESS_KEY']
@@ -126,18 +128,8 @@ class AliCloudConnect:
             logging.debug(traceback.format_exc())
             logging.debug(sys.exc_info()[0])
 
-    def client(self, client_name):
-        try:
-            client = __import__("clients.ecs")
-            mod = getattr(client, client_name)
-            clt_class = getattr(mod, "Client")
-            return clt_class(
-                self.__client
-            )
-        except Exception as e:
-            logging.error(e)
-            logging.debug(traceback.format_exc())
-            logging.debug(sys.exc_info()[0])
+    def client(self):
+        return aliClient(self.__client)
 
     def pretty_print(self, toprint):
         print json.dumps(json.loads(toprint), indent=4, sort_keys=True)

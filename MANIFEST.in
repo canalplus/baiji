@@ -1,0 +1,10 @@
+include *.md *.txt *.rst *.sh
+exclude .gitignore
+exclude .coverage
+recursive-include app *.txt
+recursive-exclude *.egg-info *
+global-exclude *.pyc
+prune .cache
+prune .git
+prune build
+prune dist

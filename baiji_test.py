@@ -1,10 +1,10 @@
-from baiji import AliCloudConnect
+from baiji.sdk import AliCloudConnect
 import sys
 import traceback
 
 try:
     connect = AliCloudConnect(region_id='eu-central-1')
-    clt = connect.client('ecs')
+    clt = connect.client()
     inst = clt.instances.all(json_format=True)
     print inst
     #instget = clt.instances.get({"RegionId": "eu-central-1", "InstanceIds": '[""]'}, json_format=True)
