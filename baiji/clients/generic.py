@@ -47,7 +47,7 @@ class ResourceCollection(object):
             request.set_query_params(params['api_params'])
         try:
             response = self.__client.do_action_with_exception(request)
-            logging.debug(response)
+            #logging.debug(response)
             if 'key_path' in params and params['key_path']:
                 return self.generate_resources(
                     json.loads(response), params['key_path'][0],

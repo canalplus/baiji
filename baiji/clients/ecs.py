@@ -248,15 +248,15 @@ class Images(ResourceCollection):
         )
         return response
 
-    def delete(self, filters, json_format=False):
+    def delete(self, params, json_format=False):
         if json_format:
-            req = {'api_params': filters}
+            req = {'api_params': params}
         else:
             req= {
                 'key_path': [
                     "Images", "Image"
                 ],
-                'api_params': filters,
+                'api_params': params,
             }
         response = self.request(
             "DeleteImage",
@@ -265,21 +265,21 @@ class Images(ResourceCollection):
         )
         return response
 
-    def copy(self, filters):
+    def copy(self, params):
         response = self.request(
             "CopyImage",
             {
-                'api_params': filters,
+                'api_params': params,
             },
             self.__resource_class
         )
         return response
 
-    def share_permission(self, filters):
+    def share_permission(self, params):
         response = self.request(
             "ModifyImageSharePermission",
             {
-                'api_params': filters,
+                'api_params': params,
             },
             self.__resource_class
         )
@@ -417,15 +417,15 @@ class Roles(ResourceCollection):
         )
         return response
 
-    def assume(self, filters, json_format=False):
+    def assume(self, params, json_format=False):
         if json_format:
-            req = {'api_params': filters}
+            req = {'api_params': params}
         else:
             req = {
                 'key_path': [
                     "AssumedRoleUser", None
                 ],
-                'api_params': filters, 
+                'api_params': params, 
             }
         response = self.request(
             "AssumeRole",
