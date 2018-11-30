@@ -17,20 +17,21 @@ try:
     image = clt.images.all(json_format=True)
     #image = clt.images.get({"RegionId": "eu-central-1", "ImageId": ","}, json_format=True)
     #image = clt.images.delete({"ImageId": ""}, json_format=True)
-    #image = clt.images.copy({"RegionId": "eu-central-1", "ImageId": "", "DestinationImageName": "test_copy_baiji", "DestinationRegionId":"eu-west-1"})
+    #image = clt.images.copy({"RegionId": "eu-central-1", "ImageId": "", "DestinationImageName": "test_copy_baiji", "DestinationRegionId":"eu-west-1", "Tag.1.Key":"image_version", "Tag.1.Value": ""})
     #image = clt.images.share_permission({"ImageId": "", "AddAccount.1": ""})
+    #image = clt.images.modify_image_attribute({"RegionId ": "eu-central-1", "ImageId": "", "ImageName": "image-baiji"})
     print image
     tag = clt.tags.all(json_format=True)
     #tag = clt.tags.get({"ResourceType": "image", "ResourceId": ""}, json_format=True)
     #tag = clt.tags.add({"ResourceType": "securitygroup", "ResourceId": "", "Tag.1.Key": "version", "Tag.1.Value": ""})
     #tag = clt.tags.remove({"ResourceType": "securitygroup", "ResourceId": "", "Tag.1.Key": "version", "Tag.1.Value": ""})
-    #print tag
+    print tag
     vpc = clt.vpcs.all(json_format=True)
     print vpc
     #vpc = clt.vpcs.get({"RegionId": "eu-central-1", "VpcId": ","}, json_format=True)
     #print vpc
     vswitch = clt.vswitches.all(json_format=True)
-    #vswitch = clt.vswitches.get({"VSwitchId": "vsw-gw84e39xf1vqjqe4dbso0"}, json_format=True)
+    #vswitch = clt.vswitches.get({"VSwitchId": ""}, json_format=True)
     print vswitch
     rol = clt.roles.all(json_format=True)
     #rol = clt.roles.get({"RoleName": ""}, json_format=True)

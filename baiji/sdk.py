@@ -25,7 +25,7 @@ import traceback
 import sys
 import os
 
-from clients.ecs import Client as aliClient
+from clients.resource import Client as aliClient
 
 logging.getLogger().setLevel(logging.INFO)
 
@@ -129,7 +129,7 @@ class AliCloudConnect:
             logging.debug(sys.exc_info()[0])
 
     def client(self):
-        return aliClient(self.__client)
+        return aliClient(self.__client, region=self.region_id)
 
     def pretty_print(self, toprint):
         print json.dumps(json.loads(toprint), indent=4, sort_keys=True)

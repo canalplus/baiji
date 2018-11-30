@@ -285,6 +285,16 @@ class Images(ResourceCollection):
         )
         return response
 
+    def modify_image_attribute(self, params):
+        response = self.request(
+            "ModifyImageAttribute",
+            {
+                'api_params': params,
+            },
+            self.__resource_class
+        )
+        return response
+
 
 class Image(Resource):
     def __init__(self, params):
