@@ -82,4 +82,4 @@ class Resource(object):
         self.__params = params
 
         for name, value in self.__params.items():
-setattr(self, name, value)
+            setattr(self, name, value)

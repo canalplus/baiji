@@ -138,4 +138,4 @@ class AliCloudConnect:
         return self.access_key_secret
 
     def get_ststoken(self):
-return self.sts_token
+        return self.sts_token

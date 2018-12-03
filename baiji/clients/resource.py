@@ -546,4 +546,4 @@ class Disks(ResourceCollection):
 
 class Disk(Resource):
     def __init__(self, params):
-super(Disk, self).__init__(params)
+        super(Disk, self).__init__(params)
