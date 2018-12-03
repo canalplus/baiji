@@ -33,14 +33,14 @@ try:
     vswitch = clt.vswitches.all(json_format=True)
     #vswitch = clt.vswitches.get({"VSwitchId": ""}, json_format=True)
     print vswitch
-    rol = clt.roles.all(json_format=True)
+    #rol = clt.roles.all(json_format=True)
     #rol = clt.roles.get({"RoleName": ""}, json_format=True)
     #rol = clt.roles.assume({"RoleArn": "acs:ram::accountid:role/rolename", "RoleSessionName": "test"}, json_format=True)
-    print rol
-    usr = clt.users.all(json_format=True)
-    print usr
-    grp = clt.groups.all(json_format=True)
-    print grp
+    #print rol
+    #usr = clt.users.all(json_format=True)
+    #print usr
+    #grp = clt.groups.all(json_format=True)
+    #print grp
     disk = clt.disks.all(json_format=True)
     #disk = clt.disks.get({"InstanceId": ""}, json_format=True)
     print disk
