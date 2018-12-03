@@ -1,4 +1,4 @@
-requests==2.7.0
+requests==2.20.0
 aliyun-python-sdk-core==2.11.0
 aliyun-python-sdk-ecs==4.12.0
 aliyun-python-sdk-sts==3.0.0
