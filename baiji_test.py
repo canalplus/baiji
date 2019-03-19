@@ -44,6 +44,8 @@ try:
     disk = clt.disks.all(json_format=True)
     #disk = clt.disks.get({"InstanceId": ""}, json_format=True)
     print disk
+    snapshots = clt.snapshots.all(json_format=True)
+    print snapshots
     print("Resources successfully fetched.")
     sys.exit(0)
 except Exception as e:

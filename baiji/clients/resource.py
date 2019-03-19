@@ -29,6 +29,7 @@ class Client(GenericClient):
         self.users = Users(client, "ram.{}".format(self.__base_domain), "2015-05-01", "https")
         self.groups = Groups(client, "ram.{}".format(self.__base_domain), "2015-05-01", "https")
         self.disks = Disks(client, self.__domain, self.__version, None)
+        self.snapshots = Snapshots(client, self.__domain, self.__version, None)
 
 
 class Instances(ResourceCollection):
@@ -547,3 +548,59 @@ class Disks(ResourceCollection):
 class Disk(Resource):
     def __init__(self, params):
         super(Disk, self).__init__(params)
+
+
+class Snapshots(ResourceCollection):
+    def __init__(self, client, domain, version, protocol):
+        self.__resource_class = Disk
+        super(Snapshots, self).__init__(client, domain, version, protocol)
+
+    def all(self, json_format=False):
+        if json_format:
+            req = {}
+        else:
+            req = {
+                'key_path': [
+                    "Snapshots", "Snapshot"
+                ]  
+            }
+        response = self.request(
+            "DescribeSnapshots",
+            req,
+            self.__resource_class
+        )
+        return response
+
+    def get(self, filters, json_format=False):
+        if json_format:
+            req = {'api_params': filters}
+        else:
+            req = {
+                'key_path': [
+                    "Snapshots", "Snapshot"
+                ],
+                'api_params': filters,
+            }
+        response = self.request(
+            "DescribeSnapshots",
+            req,
+            self.__resource_class
+        )
+        return response
+
+    def delete(self, params, json_format=False):
+        if json_format:
+            req = {'api_params': params}
+        else:
+            req= {
+                'key_path': [
+                    "Snapshots", "Snapshot"
+                ],
+                'api_params': params,
+            }
+        response = self.request(
+            "DeleteSnapshot",
+            req,
+            self.__resource_class
+        )
+        return response
