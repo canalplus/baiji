@@ -137,7 +137,7 @@ setup(
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
     install_requires=[
-        'requests==2.20.0',
+        'requests==2.31.0',
         'aliyun-python-sdk-core==2.11.0',
         'aliyun-python-sdk-ecs==4.12.0',
         'aliyun-python-sdk-sts==3.0.0',
